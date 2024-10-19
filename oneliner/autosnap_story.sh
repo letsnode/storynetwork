@@ -20,7 +20,11 @@ systemctl stop story-geth || die "Failed to stop Story-Geth service"
 
 # Backup priv_validator_state.json
 log "Backing up priv_validator_state.json..."
-cp $HOME/.story/story/data/priv_validator_state.json $HOME/.story/story/priv_validator_state.json.backup || die "Failed to backup priv_validator_state.json"
+if [[ -f $HOME/.story/story/data/priv_validator_state.json ]]; then
+  cp $HOME/.story/story/data/priv_validator_state.json $HOME/.story/story/priv_validator_state.json.backup || die "Failed to backup priv_validator_state.json"
+else
+  log "priv_validator_state.json not found. Skipping backup."
+fi
 
 # Remove existing data directories
 log "Removing existing data directories..."
@@ -49,7 +53,11 @@ fi
 
 # Restore priv_validator_state.json
 log "Restoring priv_validator_state.json..."
-mv $HOME/.story/story/priv_validator_state.json.backup $HOME/.story/story/data/priv_validator_state.json || die "Failed to restore priv_validator_state.json"
+if [[ -f $HOME/.story/story/priv_validator_state.json.backup ]]; then
+  mv $HOME/.story/story/priv_validator_state.json.backup $HOME/.story/story/data/priv_validator_state.json || die "Failed to restore priv_validator_state.json"
+else
+  log "Backup priv_validator_state.json not found. Skipping restore."
+fi
 
 # Restart Story and Story-Geth services
 log "Restarting Story and Story-Geth services..."
